@@ -1,0 +1,12 @@
+Debian GNU/Linux bookworm/sid x86_64
+Intel i7-4810MQ (8) @ 3.800GHz
+
+Producent: Intel
+Model: i7-4810MQ
+Rdzenie: 4
+Wątki: 8
+Częstotliwość bazowa: 2.80 GHz
+Max częstotliwość turbo: 3.80 GHz
+Cache: 6 MB
+
+https://www.intel.com/content/www/us/en/products/sku/78937/intel-core-i74810mq-processor-6m-cache-up-to-3-80-ghz/specifications.html
