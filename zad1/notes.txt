@@ -7,6 +7,14 @@ Rdzenie: 4
 Wątki: 8
 Częstotliwość bazowa: 2.80 GHz
 Max częstotliwość turbo: 3.80 GHz
-Cache: 6 MB
+Cache: 6144 KB
+Architektura: Haswell
+GFLOPS: 179.2
+GFLOPS per core: 179.2 / 4 = 16 * 1 * 2.8 = 44.8
 
 https://www.intel.com/content/www/us/en/products/sku/78937/intel-core-i74810mq-processor-6m-cache-up-to-3-80-ghz/specifications.html
+less /proc/cpuinfo
+https://stackoverflow.com/questions/8389648/how-do-i-achieve-the-theoretical-maximum-of-4-flops-per-cycle
+https://en.wikipedia.org/wiki/FLOPS
+https://unix.stackexchange.com/questions/230634/how-to-find-out-intel-architecture-family-from-command-line
+https://www.intel.com/content/dam/support/us/en/documents/processors/APP-for-Intel-Core-Processors.pdf
