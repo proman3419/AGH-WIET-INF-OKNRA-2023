@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import csv
 import os
 import matplotlib.pyplot as plt
@@ -47,11 +49,12 @@ def plot(f_name_pattern_str, save_f_name):
     plt.subplots_adjust(right=0.75)
 
 
-    plt.savefig(save_f_name)
+    plt.savefig(save_f_name, bbox_inches="tight")
     print(f"saved as {save_f_name}")
 
 
-plot("^output_MMult[0-9]+.csv$", "plot_initial.png")
+plot("^output_MMult0.csv$", "plot_initial.png")
+plot("^output_MMult[0-9]+.csv$", "plot_common.png")
 plot("^output_MMult_1x4_[0-9]+.csv$", "plot_1x4.png")
 plot("^output_MMult_4x4_[0-9]+.csv$", "plot_4x4.png")
 plot("^output_MMult(_[0-9]+x[0-9]+_)?[0-9]+.csv$", "plot_all.png")

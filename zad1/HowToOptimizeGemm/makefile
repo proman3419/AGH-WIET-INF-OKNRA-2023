@@ -40,6 +40,17 @@ run:
 	cp output_$(OLD).m output_old.m
 	cp output_$(NEW).m output_new.m
 
+run_all:
+	./run_all.sh
+
+plot_all:
+	./output_to_csv.sh
+	./plot_all.py
+
+do_all:
+	make run_all
+	make plot_all
+
 clean:
 	rm -f *.o *~ core *.x
 
