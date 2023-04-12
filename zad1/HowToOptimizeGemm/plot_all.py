@@ -4,15 +4,25 @@ import csv
 import os
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+import numpy as np
 import re
 
 
 OUTPUT_FILES_DIR = "."
-MAX_GFLOPS = 44.8
+MAX_GFLOPS = 16 # should be 44.8 in my processor's case, lowered to make the plots more readable
 
 
-def get_legend_str(f_name):
-    return f_name.replace("output_", "").replace(".csv", "")
+def get_series_entries(fname_pattern):
+    entries = []
+    for entry in os.scandir(OUTPUT_FILES_DIR):
+        if entry.is_file() and \
+        fname_pattern.match(entry.name):
+            entries.append(entry)
+    return entries
+
+
+def get_legend_str(fname):
+    return fname.replace("output_", "").replace(".csv", "")
 
 
 def get_labels_order(labels):
@@ -20,24 +30,29 @@ def get_labels_order(labels):
     return [e[1] for e in sorted(A)]
 
 
-def plot(f_name_pattern_str, save_f_name):
-    print(f"plotting {f_name_pattern_str}")
+def plot(fname_pattern_str, save_fname):
+    print(f"plotting {fname_pattern_str}")
+    fname_pattern = re.compile(fname_pattern_str)
+    series_entries = get_series_entries(fname_pattern)
+
     figure(figsize=(9, 6), dpi=80)
-    f_name_pattern = re.compile(f_name_pattern_str)
-    for entry in os.scandir(OUTPUT_FILES_DIR):
-        if entry.is_file() and \
-        f_name_pattern.match(entry.name):
-            with open(entry.path) as f:  
-                line_reader = csv.reader(f, delimiter=',')
-                xlabel, ylabel = tuple(v.strip() for v in next(line_reader))
-                # next(line_reader)
-                x = []
-                y = []
-                for row in line_reader:
-                    x.append(int(row[0]))
-                    y.append(float(row[1]))
-                plt.plot(x, y, label=get_legend_str(entry.name), marker="o")
+    # Avoid repeating label colors
+    colormap = plt.cm.nipy_spectral
+    colors = colormap(np.linspace(0, 1, len(series_entries)))
     ax = plt.gca()
+    ax.set_prop_cycle('color', colors)
+    
+    for entry in series_entries:
+        with open(entry.path) as f:  
+            line_reader = csv.reader(f, delimiter=',')
+            xlabel, ylabel = tuple(v.strip() for v in next(line_reader))
+            x = []
+            y = []
+            for row in line_reader:
+                x.append(int(row[0]))
+                y.append(float(row[1]))
+            plt.plot(x, y, label=get_legend_str(entry.name), marker="o")
+    
     ax.set_xlim([40, 800])
     ax.set_ylim([0, MAX_GFLOPS])            
     plt.xlabel(xlabel)
@@ -48,9 +63,8 @@ def plot(f_name_pattern_str, save_f_name):
     plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order], bbox_to_anchor=(1.04, 0.5), loc="center left")
     plt.subplots_adjust(right=0.75)
 
-
-    plt.savefig(save_f_name, bbox_inches="tight")
-    print(f"saved as {save_f_name}")
+    plt.savefig(save_fname, bbox_inches="tight")
+    print(f"saved as {save_fname}")
 
 
 plot("^output_MMult0.csv$", "plot_initial.png")
