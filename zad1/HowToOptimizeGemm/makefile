@@ -6,7 +6,7 @@ NEW  := MMult_4x4_9
 
 CC         := gcc
 LINKER     := $(CC)
-CFLAGS     := -O2 -Wall -msse3
+CFLAGS     := -O2 -Wall -msse3 -march=haswell
 LDFLAGS    := -lm
 
 UTIL       := copy_matrix.o \

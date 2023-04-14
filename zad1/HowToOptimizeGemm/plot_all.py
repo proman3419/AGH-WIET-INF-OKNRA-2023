@@ -9,7 +9,7 @@ import re
 
 
 OUTPUT_FILES_DIR = "."
-MAX_GFLOPS = 16 # should be 44.8 in my processor's case, lowered to make the plots more readable
+MAX_GFLOPS = 20.0 # should be 44.8 in my processor's case, lowered to make the plots more readable
 
 
 def get_series_entries(fname_pattern):
