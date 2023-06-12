@@ -9,7 +9,7 @@ import re
 
 
 OUTPUT_FILES_DIR = "."
-MAX_GFLOPS = 5.0 # should be 44.8 in my processor's case, lowered to make the plots more readable
+# MAX_GFLOPS = 5.0 # should be 44.8 in my processor's case, lowered to make the plots more readable
 
 
 def get_series_entries(fname_pattern):
@@ -30,7 +30,7 @@ def get_labels_order(labels):
     return [e[1] for e in sorted(A)]
 
 
-def plot(fname_pattern_str, save_fname):
+def plot(fname_pattern_str, save_fname, check=False):
     print(f"plotting {fname_pattern_str}")
     fname_pattern = re.compile(fname_pattern_str)
     series_entries = get_series_entries(fname_pattern)
@@ -43,6 +43,7 @@ def plot(fname_pattern_str, save_fname):
     ax.set_prop_cycle('color', colors)
     
     for entry in series_entries:
+        print(f"processing {entry.path}")
         with open(entry.path) as f:  
             line_reader = csv.reader(f, delimiter=',')
             xlabel, ylabel = tuple(v.strip() for v in next(line_reader))
@@ -50,13 +51,14 @@ def plot(fname_pattern_str, save_fname):
             y = []
             for row in line_reader:
                 x.append(int(row[0]))
-                y.append(float(row[1]))
+                y_str = row[2] if check else row[1]
+                y.append(float(y_str))
             plt.plot(x, y, label=get_legend_str(entry.name), marker="o")
     
     ax.set_xlim([40, 800])
-    ax.set_ylim([0, MAX_GFLOPS])            
+    # ax.set_ylim([0, MAX_GFLOPS])
     plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    plt.ylabel("Check value" if check else ylabel)
 
     handles, labels = ax.get_legend_handles_labels()
     order = get_labels_order(labels)
@@ -67,4 +69,10 @@ def plot(fname_pattern_str, save_fname):
     print(f"saved as {save_fname}")
 
 
-plot("^output_[0-9]+.csv$", "plot_all.png")
+def plot_with_checks(fname_pattern_str, save_fname):
+    plot(fname_pattern_str, save_fname, False)
+    t = save_fname.split(".")
+    plot(fname_pattern_str, t[0] + "_checks." + t[1], True)
+
+
+plot_with_checks("^output_LU_decompose_[0-9]+.csv$", "plot_all.png")

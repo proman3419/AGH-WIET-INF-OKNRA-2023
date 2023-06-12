@@ -1,16 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <time.h>
-#include <math.h>
+#include <float.h>
 
 #define IDX(i, j, n) (((j)+ (i)*(n)))
 static double gtod_ref_time_sec = 0.0;
-static char *result_file_name = "output_6.m";
-
 
 int LUPDecompose(double *A, int N) {
-
     register int i, j, k, size;
     register double division_var, temp;
     size = N;
@@ -20,10 +16,8 @@ int LUPDecompose(double *A, int N) {
         for (j = i + 1; j < size; j++) {
             A[IDX(j, i, size)] /= division_var;
             temp = A[IDX(j, i, size)];
-
             for (k = i + 1; k < size;) {
-                if (k + 15 < size) {
-                    temp = A[IDX(j, i, size)];
+                if (k + 7 < size) {
                     A[IDX(j, k, size)] -= temp * A[IDX(i, k, size)];
                     A[IDX(j, k + 1, size)] -= temp * A[IDX(i, k + 1, size)];
                     A[IDX(j, k + 2, size)] -= temp * A[IDX(i, k + 2, size)];
@@ -32,15 +26,7 @@ int LUPDecompose(double *A, int N) {
                     A[IDX(j, k + 5, size)] -= temp * A[IDX(i, k + 5, size)];
                     A[IDX(j, k + 6, size)] -= temp * A[IDX(i, k + 6, size)];
                     A[IDX(j, k + 7, size)] -= temp * A[IDX(i, k + 7, size)];
-                    A[IDX(j, k + 8, size)] -= temp * A[IDX(i, k + 8, size)];
-                    A[IDX(j, k + 9, size)] -= temp * A[IDX(i, k + 9, size)];
-                    A[IDX(j, k + 10, size)] -= temp * A[IDX(i, k + 10, size)];
-                    A[IDX(j, k + 11, size)] -= temp * A[IDX(i, k + 11, size)];
-                    A[IDX(j, k + 12, size)] -= temp * A[IDX(i, k + 12, size)];
-                    A[IDX(j, k + 13, size)] -= temp * A[IDX(i, k + 13, size)];
-                    A[IDX(j, k + 14, size)] -= temp * A[IDX(i, k + 14, size)];
-                    A[IDX(j, k + 15, size)] -= temp * A[IDX(i, k + 15, size)];
-                    k += 16;
+                    k += 8;
                 } else {
                     A[IDX(j, k, size)] -= A[IDX(j, i, size)] * A[IDX(i, k, size)];
                     k++;
@@ -49,7 +35,7 @@ int LUPDecompose(double *A, int N) {
         }
     }
 
-    return 0;  //decomposition done 
+    return 0;  //decomposition done
 }
 
 double dclock() {
@@ -72,19 +58,12 @@ double calculate_gflops(int size) {
 }
 
 int main() {
-    int i, j, iret, reps = 5;
-
-    double dtime, dtime_best;
-
+    int i, j, reps = 5;
+    double dtime, dtime_best = FLT_MAX;
     double *matrix;
-
-    FILE *output = fopen(result_file_name, "w");
-    fprintf(output, "version = 'LU_Decompose_6';\n");
-    fprintf(output, "LU_Decompose = [\n");
 
     for (int size = 40; size <= 1000; size += 40) {
         matrix = malloc(size * size * sizeof(double));
-
         srand(1);
 
         for (i = 0; i < size; i++) {
@@ -95,7 +74,7 @@ int main() {
 
         for (int rep = 0; rep < reps; rep++) {
             dtime = dclock();
-            iret = LUPDecompose(matrix, size);
+            LUPDecompose(matrix, size);
             dtime = dclock() - dtime;
             if (rep == 0) {
                 dtime_best = dtime;
@@ -103,8 +82,6 @@ int main() {
                 dtime_best = (dtime < dtime_best ? dtime : dtime_best);
             }
         }
-        printf("Time: %le \n", dtime_best);
-        fprintf(output, "%d %le 0.1 \n", size, calculate_gflops(size) / dtime_best);
 
         double check = 0.0;
         for (i = 0; i < size; i++) {
@@ -112,10 +89,8 @@ int main() {
                 check = check + matrix[IDX(i, j, size)];
             }
         }
-        printf("Check: %le \n", check);
+        printf("%d %le %le\n", size, calculate_gflops(size) / dtime_best, check);
         fflush(stdout);
         free(matrix);
     }
-    fprintf(output, "];\n");
-    fclose(output);
 }

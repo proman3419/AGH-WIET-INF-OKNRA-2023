@@ -3,13 +3,13 @@
 function run_all() {
     arr=("$@")
     for i in "${arr[@]}"; do
-        file="lu_decompose_${i}.c"
-        echo ">>>>> Running make run FILE=$file"
-        make run FILE="$file"
+        version="LU_decompose_${i}"
+        echo ">>>>> Running make run VERSION=$version"
+        make run VERSION="$version"
     done
 }
 
-declare -a files=("1" "2" "3" "4" "5" "6" "7")
+declare -a versions_ids=("1" "2" "3" "4" "5" "6" "7")
 
-echo ">>>>> 1-7"
-run_all "${files[@]}"
+echo ">>>>> all"
+run_all "${versions_ids[@]}"

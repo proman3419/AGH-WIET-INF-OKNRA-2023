@@ -1,17 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <time.h>
-#include <math.h>
+#include <float.h>
 #include <x86intrin.h>
 
 #define IDX(i, j, n) (((j)+ (i)*(n)))
 static double gtod_ref_time_sec = 0.0;
-static char *result_file_name = "output_4.m";
-
 
 int LUPDecompose(double *A, int N) {
-
     register int i, j, k, size;
     register double division_var;
     register __m128d tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, mult;
@@ -23,7 +19,6 @@ int LUPDecompose(double *A, int N) {
             A[IDX(j, i, size)] /= division_var;
             mult[0] = A[IDX(j, i, size)];
             mult[1] = A[IDX(j, i, size)];
-
             for (k = i + 1; k < size;) {
                 if (k + 7 < size) {
                     tmp0 = _mm_loadu_pd(A + IDX(i, k, size));
@@ -63,7 +58,7 @@ int LUPDecompose(double *A, int N) {
         }
     }
 
-    return 0;  //decomposition done 
+    return 0;  //decomposition done
 }
 
 double dclock() {
@@ -86,19 +81,12 @@ double calculate_gflops(int size) {
 }
 
 int main() {
-    int i, j, iret, reps = 5;
-
-    double dtime, dtime_best;
-
+    int i, j, reps = 5;
+    double dtime, dtime_best = FLT_MAX;
     double *matrix;
-
-    FILE *output = fopen(result_file_name, "w");
-    fprintf(output, "version = 'LU_Decompose_4';\n");
-    fprintf(output, "LU_Decompose = [\n");
 
     for (int size = 40; size <= 1000; size += 40) {
         matrix = malloc(size * size * sizeof(double));
-
         srand(1);
 
         for (i = 0; i < size; i++) {
@@ -109,7 +97,7 @@ int main() {
 
         for (int rep = 0; rep < reps; rep++) {
             dtime = dclock();
-            iret = LUPDecompose(matrix, size);
+            LUPDecompose(matrix, size);
             dtime = dclock() - dtime;
             if (rep == 0) {
                 dtime_best = dtime;
@@ -117,8 +105,6 @@ int main() {
                 dtime_best = (dtime < dtime_best ? dtime : dtime_best);
             }
         }
-        printf("Time: %le \n", dtime_best);
-        fprintf(output, "%d %le 0.1 \n", size, calculate_gflops(size) / dtime_best);
 
         double check = 0.0;
         for (i = 0; i < size; i++) {
@@ -126,10 +112,8 @@ int main() {
                 check = check + matrix[IDX(i, j, size)];
             }
         }
-        printf("Check: %le \n", check);
+        printf("%d %le %le\n", size, calculate_gflops(size) / dtime_best, check);
         fflush(stdout);
         free(matrix);
     }
-    fprintf(output, "];\n");
-    fclose(output);
 }
