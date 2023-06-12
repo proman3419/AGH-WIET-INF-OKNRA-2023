@@ -52,7 +52,7 @@ int LUPDecompose(double *A, int N) {
         }
     }
 
-    return 0;  //decomposition done
+    return 0;
 }
 
 double dclock() {

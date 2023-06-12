@@ -16,14 +16,13 @@ int LUPDecompose(double *A, int N) {
         for (j = i + 1; j < size; j++) {
             A[IDX(j, i, size)] /= division_var;
             mult = A[IDX(j, i, size)];
-
             for (k = i + 1; k < size; k++) {
                 A[IDX(j, k, size)] -= mult * A[IDX(i, k, size)];
             }
         }
     }
 
-    return 0;  //decomposition done
+    return 0;
 }
 
 double dclock() {

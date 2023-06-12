@@ -55,7 +55,7 @@ def plot(fname_pattern_str, save_fname, check=False):
                 y.append(float(y_str))
             plt.plot(x, y, label=get_legend_str(entry.name), marker="o")
     
-    ax.set_xlim([40, 800])
+    ax.set_xlim([40, 1000])
     # ax.set_ylim([0, MAX_GFLOPS])
     plt.xlabel(xlabel)
     plt.ylabel("Check value" if check else ylabel)
